@@ -2,10 +2,21 @@ import asyncio
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from contextlib import asynccontextmanager
 
 from .models import ShipData, SimState, Vector
 from .state import sim, manager 
 from .routers import control 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    task = asyncio.create_task(run_simulation())
+    yield
+    task.cancel()
+    try:
+        await task
+    except asyncio.CancelledError:
+        pass
 
 app = FastAPI(
     title="collision system",
@@ -14,6 +25,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
+    lifespan=lifespan,
 )
 
 app.include_router(control.router)
@@ -32,10 +44,6 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-
-@app.on_event("startup")
-async def start_physics_loop():
-    asyncio.create_task(run_simulation())
 
 async def run_simulation():
     while True:
@@ -57,4 +65,4 @@ async def run_simulation():
         state = SimState(ships=ship_models, alerts=alerts, is_paused=sim.paused)
         
         if manager.active_connections:
-            await manager.broadcast(state.dict())
+            await manager.broadcast(state.model_dump())
