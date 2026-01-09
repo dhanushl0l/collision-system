@@ -1,0 +1,186 @@
+/* --- DARK RADAR THEME --- */
+:root {
+    --bg: #0f1215;
+    --panel: #111;
+    --green: #00ff41;
+    --red: #ff3333;
+    --orange: #ffcc00;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg);
+    color: var(--green);
+    font-family: 'Courier New', monospace;
+    margin: 0;
+    overflow: hidden;
+    /* Prevent page scroll, only canvas pans */
+}
+
+.app-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* RADAR SECTION (Fills available space) */
+.radar-section {
+    flex: 1;
+    /* This makes it take all remaining width */
+    position: relative;
+    border-right: 2px solid #333;
+    background: #000;
+    overflow: hidden;
+}
+
+/* IMPORTANT: Canvas fills the radar-section exactly */
+canvas {
+    display: block;
+    /* Removes bottom scrollbar margin */
+    width: 100%;
+    height: 100%;
+}
+
+.overlay-controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+}
+
+.sim-controls {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 10;
+}
+
+button {
+    background: #002200;
+    color: var(--green);
+    border: 1px solid var(--green);
+    padding: 5px 10px;
+    margin: 2px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: inherit;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background: #004400;
+}
+
+.btn-red {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+.btn-green {
+    background: #003300;
+}
+
+/* SIDEBAR (Fixed Width) */
+.sidebar {
+    width: 320px;
+    background: #101214;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #333;
+    z-index: 20;
+}
+
+.title {
+    color: var(--green);
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+/* TRAFFIC LIST */
+#ship-list {
+    border-top: 1px solid #333;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.list-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 5px;
+    border-bottom: 1px solid #222;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.list-item:hover {
+    background: #1a1d21;
+}
+
+.ship-id {
+    font-weight: bold;
+    color: var(--green);
+}
+
+.ship-data {
+    text-align: right;
+    color: var(--green);
+}
+
+/* EDITORS & ALERTS */
+.editor-panel {
+    background: #000;
+    border: 1px solid var(--green);
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+.input-group {
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+input {
+    background: #222;
+    border: 1px solid #555;
+    color: white;
+    width: 80px;
+    padding: 2px;
+    font-family: inherit;
+    text-align: right;
+}
+
+.alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--green);
+    background: #001100;
+}
+
+.alert.danger {
+    border-color: var(--red);
+    color: var(--red);
+    animation: blink 1s infinite;
+}
+
+.alert.warning {
+    border-color: var(--orange);
+    color: var(--orange);
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0.5;
+    }
+}
