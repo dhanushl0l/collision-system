@@ -8,27 +8,19 @@ let alerts = [];
 let selectedId = null;
 let socket = null;
 
-
 let view = { x: 0, y: 0, scale: 1.0 };
 let cameraOffset = { x: 0, y: 0 };
 let lastShipPos = { x: 0, y: 0 };
-let scannerAngle = 0;
-
 
 let isDragging = false;
 let dragStart = { x: 0, y: 0 };
 let lastMouse = { x: 0, y: 0 };
 let hasMoved = false;
 
-
 function init() {
     resize();
     window.addEventListener('resize', resize);
-
-
     connectWebSocket();
-
-
     requestAnimationFrame(renderLoop);
 }
 
@@ -40,29 +32,23 @@ function resize() {
 function connectWebSocket() {
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const wsUrl = `${protocol}://${window.location.host}/ws`;
-
-    console.log("Connecting to Radar Stream:", wsUrl);
+    console.log("Connecting to ws:", wsUrl);
     socket = new WebSocket(wsUrl);
-
-    socket.onopen = () => console.log("Radar System: Online");
-
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         ships = data.ships;
         alerts = data.alerts;
-
         const btn = document.getElementById('btnPause');
         if (btn) btn.innerText = data.is_paused ? "RESUME" : "PAUSE";
-
         updateUI();
     };
 
     socket.onclose = () => {
-        console.warn("Connection lost. Reconnecting in 1s...");
+        console.warn("connection lost. reconnecting...");
         setTimeout(connectWebSocket, 1000);
     };
 
-    socket.onerror = (err) => console.error("WebSocket Error:", err);
+    socket.onerror = (err) => console.error("ws Error:", err);
 }
 
 function renderLoop() {
@@ -70,21 +56,15 @@ function renderLoop() {
     requestAnimationFrame(renderLoop);
 }
 
-
 function render() {
-
     const ownShip = ships.find(s => s.id === 'OWN');
-
 
     if (ownShip) {
         lastShipPos = { x: ownShip.position.x, y: ownShip.position.y };
     }
 
-
-
     view.x = lastShipPos.x + cameraOffset.x;
     view.y = lastShipPos.y + cameraOffset.y;
-
 
     ctx.fillStyle = '#0f1215';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -94,16 +74,11 @@ function render() {
 
     ctx.save();
 
-
     ctx.translate(cx, cy);
     ctx.scale(view.scale, view.scale);
     ctx.translate(-view.x, -view.y);
 
-
-
     drawGrid(lastShipPos);
-    drawScanner(lastShipPos);
-
 
     alerts.forEach(drawCPAMarker);
 
@@ -115,11 +90,7 @@ function render() {
 
     ctx.restore();
 
-
-    scannerAngle += 0.03;
 }
-
-
 
 function drawGrid(center) {
     ctx.strokeStyle = '#003300';
@@ -128,13 +99,11 @@ function drawGrid(center) {
     const cx = center.x;
     const cy = center.y;
 
-
     [100, 200, 300, 400, 500].forEach(r => {
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
         ctx.stroke();
     });
-
 
     const big = 50000;
 
@@ -147,41 +116,19 @@ function drawGrid(center) {
     ctx.stroke();
 }
 
-function drawScanner(center) {
-    const length = 1000;
-
-    ctx.save();
-    ctx.translate(center.x, center.y);
-    ctx.rotate(scannerAngle);
-
-
-    const grad = ctx.createLinearGradient(0, 0, length, 0);
-    grad.addColorStop(0, 'rgba(0, 255, 65, 0)');
-    grad.addColorStop(1, 'rgba(0, 255, 65, 0.15)');
-
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.arc(0, 0, length, -0.3, 0);
-    ctx.fill();
-
-
-    ctx.strokeStyle = '#00ff41';
-    ctx.lineWidth = 2 / view.scale;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(length, 0);
-    ctx.stroke();
-
-    ctx.restore();
-}
-
 function drawShip(s, risk) {
-    let color = '#00ff41';
-    if (risk === 'WARNING') color = '#ffcc00';
-    if (risk === 'DANGER') color = '#ff3333';
-    if (s.id === 'OWN') color = '#00ff41';
-    if (s.id === selectedId) color = '#ffffff';
+    let color;
+    if (s.id === selectedId) {
+        color = '#ffffff';
+    } else if (s.id === 'OWN') {
+        color = '#00ff41';
+    } else if (risk === 'DANGER') {
+        color = '#ff3333';
+    } else if (risk === 'WARNING') {
+        color = '#ffcc00';
+    } else {
+        color = '#00ff41';
+    }
 
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -229,9 +176,6 @@ function drawCPAMarker(alert) {
     ctx.fillText("CPA", x + 10 / view.scale, y);
 }
 
-
-
-
 canvas.addEventListener('mousedown', e => {
     isDragging = true;
     hasMoved = false;
@@ -245,8 +189,6 @@ canvas.addEventListener('mousemove', e => {
         const dx = e.clientX - lastMouse.x;
         const dy = e.clientY - lastMouse.y;
 
-
-
         cameraOffset.x -= dx / view.scale;
         cameraOffset.y -= dy / view.scale;
 
@@ -258,12 +200,10 @@ canvas.addEventListener('mousemove', e => {
     }
 });
 
-
 canvas.addEventListener('mouseup', e => {
     isDragging = false;
     if (!hasMoved) handleCanvasClick(e);
 });
-
 
 canvas.addEventListener('wheel', e => {
     e.preventDefault();
@@ -271,7 +211,6 @@ canvas.addEventListener('wheel', e => {
     const newScale = view.scale * factor;
     if (newScale > 0.05 && newScale < 10) view.scale = newScale;
 });
-
 
 function screenToWorld(sx, sy) {
     const cx = canvas.width / 2;
@@ -293,8 +232,6 @@ function handleCanvasClick(e) {
     else closeEdit();
 }
 
-
-
 function selectTarget(s) {
     selectedId = s.id;
     document.getElementById('target-editor').classList.remove('hidden');
@@ -305,7 +242,6 @@ function selectTarget(s) {
 }
 
 function updateUI() {
-
     const box = document.getElementById('alert-box');
     if (alerts.length === 0) box.innerHTML = '<div class="no-alerts" style="color:#666">SECTOR CLEAR</div>';
     else {
@@ -316,7 +252,6 @@ function updateUI() {
             </div>
         `).join('');
     }
-
 
     const list = document.getElementById('ship-list');
     const targets = ships.filter(s => !s.is_own_ship);
@@ -331,15 +266,10 @@ function updateUI() {
     }).join('');
 }
 
-
-
-
 function resetView() {
     cameraOffset = { x: 0, y: 0 };
     view.scale = 1.0;
-
 }
-
 
 function pan(d) {
     const s = 50 / view.scale;
@@ -349,26 +279,34 @@ function pan(d) {
     if (d == 'E') cameraOffset.x += s;
 }
 
-function zoom(f) { view.scale *= f; }
+function zoom(f) {
+    view.scale *= f;
+}
 
+async function togglePause() {
+    await fetch('/api/control/pause', { method: 'POST' });
+}
 
-async function togglePause() { await fetch('/api/control/pause', { method: 'POST' }); }
-async function addTarget() { await fetch('/api/control/add', { method: 'POST' }); }
+async function addTarget() {
+    await fetch('/api/control/add', { method: 'POST' });
+}
+
 async function deleteTarget() {
     if (selectedId) await fetch(`/api/control/remove/${selectedId}`, { method: 'POST' });
     closeEdit();
 }
+
 async function applyEdit() {
     if (!selectedId) return;
     const s = document.getElementById('edit-spd').value;
     const h = document.getElementById('edit-hdg').value;
     await fetch(`/api/control/update/${selectedId}?speed=${s}&heading=${h}`, { method: 'POST' });
 }
+
 function closeEdit() {
     selectedId = null;
     document.getElementById('target-editor').classList.add('hidden');
     document.getElementById('no-selection').classList.remove('hidden');
 }
-
 
 init();

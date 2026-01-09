@@ -17,7 +17,6 @@ body {
     font-family: 'Courier New', monospace;
     margin: 0;
     overflow: hidden;
-    /* Prevent page scroll, only canvas pans */
 }
 
 .app-container {
@@ -39,7 +38,6 @@ body {
 /* IMPORTANT: Canvas fills the radar-section exactly */
 canvas {
     display: block;
-    /* Removes bottom scrollbar margin */
     width: 100%;
     height: 100%;
 }
