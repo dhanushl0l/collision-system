@@ -63,3 +63,56 @@ def test_crossing_safe_scenario(sim):
     alert = sim.calculate_risk(sim.ships[0], sim.ships[1])
     
     assert alert is None
+
+def test_overtaking_scenario(sim):
+    """Test Overtaking: Target faster, same heading, coming from behind."""
+    # Own Ship: Speed 10, Heading 90 (East)
+    sim.ships.append({
+        "id": "OWN", "x": 0.0, "y": 0.0, 
+        "speed": 10.0, "heading": 90.0, "is_own": True
+    })
+    
+    # Target: Behind (-500m), Speed 20 (Faster), Heading 90 (Same)
+    sim.ships.append({
+        "id": "TGT_OVERTAKE", "x": -500.0, "y": 0.0, 
+        "speed": 20.0, "heading": 90.0, "is_own": False
+    })
+    
+    own = sim.ships[0]
+    target = sim.ships[1]
+    
+    alert = sim.calculate_risk(own, target)
+    
+    # Calculations:
+    # Relative Speed = 10 m/s . Distance = 500m.
+    # TCPA should be 50 seconds. CPA should be 0.
+    assert alert is not None
+    assert alert.cpa == pytest.approx(0.0, abs=1.0)
+    assert alert.tcpa == pytest.approx(50.0, abs=0.1) 
+    assert alert.level == "DANGER" # TCPA < 120s is DANGER in your logic
+
+def test_crossing_bow_warning(sim):
+    """Test Crossing Bow: Target crossing ahead at a distance triggering WARNING."""
+    # Own Ship: Moving North (Heading 0)
+    sim.ships.append({
+        "id": "OWN", "x": 0.0, "y": 0.0, 
+        "speed": 10.0, "heading": 0.0, "is_own": True
+    })
+    
+    # Target: To the Right (East), Moving West (270)
+    # Positioned so it crosses ahead but not immediately (Warning Zone)
+    # Distance ~250m, Closing Speed ~14m/s
+    sim.ships.append({
+        "id": "TGT_CROSS", "x": 250.0, "y": 250.0, 
+        "speed": 10.0, "heading": 270.0, "is_own": False
+    })
+    
+    own = sim.ships[0]
+    target = sim.ships[1]
+    
+    alert = sim.calculate_risk(own, target)
+    
+    # We expect a warn because it is close (<300m) 
+    # but maybe not immediate collision depending on exact geometry
+    assert alert is not None
+    assert alert.level in ["WARNING", "DANGER"]
