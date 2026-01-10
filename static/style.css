@@ -42,11 +42,115 @@ canvas {
     height: 100%;
 }
 
+/*nav buttons*/
 .overlay-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 352px;
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    z-index: 1000;
+}
+
+.overlay-controls button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.overlay-controls button svg {
+    width: 24px;
+    height: 24px;
+    fill: #ecf0f1;
+}
+
+.overlay-controls button:hover {
+    background-color: #34495e;
+}
+
+.overlay-controls button:active {
+    background-color: #2980b9;
+}
+
+.zoom-strip {
+    display: flex;
+    flex-direction: column;
+    outline: 1px solid var(--green);
+    background: #002200;
+    border-radius: 25px;
+    padding: 5px;
+    gap: 5px;
+}
+
+.zoom-strip button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.nav-circle {
+    width: 150px;
+    height: 150px;
+    outline: 1px solid var(--green);
+    background: #002200;
+    border-radius: 50%;
+    position: relative;
+}
+
+.nav-circle button {
     position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-color: transparent;
+}
+
+.nav-circle .btn-n {
     top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-circle .btn-s {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-circle .btn-w {
     left: 10px;
-    z-index: 10;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.nav-circle .btn-e {
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.nav-circle .btn-c {
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    background-color: transparent;
+    outline: none;
+    margin-top: -22px;
+    margin-left: -22px;
+    transform: none;
+}
+
+.overlay-controls p {
+    right: 0px;
+    position: absolute;
+    top: -70px;
+    text-align: center;
 }
 
 .sim-controls {

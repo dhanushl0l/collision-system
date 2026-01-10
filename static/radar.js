@@ -228,12 +228,20 @@ function handleCanvasClick(e) {
 
     const hit = ships.find(s => Math.hypot(s.position.x - world.x, s.position.y - world.y) < hitRadius);
 
-    if (hit) selectTarget(hit);
+    if (hit) selectTarget(hit.id);
     else closeEdit();
 }
 
-function selectTarget(s) {
+function selectTarget(id) {
+    const s = ships.find(ship => ship.id === id);
+
+    if (!s) return;
     selectedId = s.id;
+    if (selectedId == 'OWN') {
+        document.getElementById('btn-delete').style.display = 'none';
+    } else {
+        document.getElementById('btn-delete').style.display = '';
+    }
     document.getElementById('target-editor').classList.remove('hidden');
     document.getElementById('edit-id').innerText = s.id;
     document.getElementById('edit-spd').value = Math.round(s.speed || 0);
@@ -254,16 +262,32 @@ function updateUI() {
     }
 
     const list = document.getElementById('ship-list');
-    const targets = ships.filter(s => !s.is_own_ship);
+    ships.forEach(s => {
+        const domId = `ship-${s.id}`;
+        let el = document.getElementById(domId);
 
-    list.innerHTML = targets.map(s => {
-        const isSel = s.id === selectedId ? 'background:#222; border-left: 2px solid #fff;' : '';
-        return `
-        <div class="list-item" style="${isSel}" onclick="selectTarget({id:'${s.id}'})">
-            <span class="ship-id">${s.id}</span>
-            <span class="ship-data">${Math.round(s.speed)}kts / ${Math.round(s.heading)}°</span>
-        </div>`;
-    }).join('');
+        if (!el) {
+            list.insertAdjacentHTML('beforeend', `
+                <div id="${domId}" class="list-item" onclick="selectTarget('${s.id}')">
+                    <span class="ship-id"></span>
+                    <span class="ship-data"></span>
+                </div>
+            `);
+            el = document.getElementById(domId);
+        }
+
+        el.querySelector('.ship-id').textContent = s.id;
+        el.querySelector('.ship-data').textContent = `${Math.round(s.speed)}kts / ${Math.round(s.heading)}°`;
+
+        const isSel = s.id === selectedId;
+        el.style.background = isSel ? '#222' : '';
+        el.style.borderLeft = isSel ? '2px solid #fff' : '';
+    });
+
+    const activeIds = ships.map(s => `ship-${s.id}`);
+    document.querySelectorAll('#ship-list .list-item').forEach(el => {
+        if (!activeIds.includes(el.id)) el.remove();
+    });
 }
 
 function resetView() {

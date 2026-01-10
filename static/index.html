@@ -13,16 +13,50 @@
             <canvas id="radarCanvas"></canvas>
 
             <div class="overlay-controls">
-                <button onclick="pan('N')">⬆️</button><br>
-                <div style="display:inline-block">
-                    <button onclick="pan('W')">⬅️</button>
-                    <button onclick="resetView()">CENTER</button>
-                    <button onclick="pan('E')">➡️</button>
-                </div><br>
-                <button onclick="pan('S')">⬇️</button>
-                <div class="zoom-controls">
-                    <button onclick="zoom(1.1)">Zoom +</button>
-                    <button onclick="zoom(0.9)">Zoom -</button>
+                <p>Use the mouse to navigate the map view.</p>
+                <div class="nav-circle">
+                    <button class="btn-n" onclick="pan('N')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z" />
+                        </svg>
+                    </button>
+
+                    <button class="btn-w" onclick="pan('W')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                        </svg>
+                    </button>
+
+                    <button class="btn-c" onclick="resetView()" title="Center View">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z" />
+                        </svg>
+                    </button>
+
+                    <button class="btn-e" onclick="pan('E')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+                        </svg>
+                    </button>
+
+                    <button class="btn-s" onclick="pan('S')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="zoom-strip">
+                    <button onclick="zoom(1.1)" title="Zoom In">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                        </svg>
+                    </button>
+                    <button onclick="zoom(0.9)" title="Zoom Out">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 13H5v-2h14v2z" />
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -51,7 +85,7 @@
                 </div>
                 <div class="btn-group">
                     <button onclick="applyEdit()" class="btn-green">UPDATE</button>
-                    <button onclick="deleteTarget()" class="btn-red">DELETE TARGET</button>
+                    <button onclick="deleteTarget()" id="btn-delete" class="btn-red">DELETE TARGET</button>
                 </div>
                 <button onclick="closeEdit()" style="width:100%; margin-top:5px">CANCEL</button>
             </div>
