@@ -24,11 +24,28 @@ A real-time radar simulation and collision avoidance system built with **FastAPI
     git clone https://github.com/dhanushl0l/collision-system.git
     cd collision-system
     ```
-2.  **Install Dependencies**
+2. **Create a virtual environment:**
+```bash
+python -m venv .venv
+
+```
+3. **Activate the environment:**
+
+* **Activate the environment (Linux/macOS, bash):**
+```bash
+source .venv/bin/activate
+
+```
+* **Windows:**
+```cmd
+.venv\Scripts\activate
+
+```
+4.  **Install Dependencies**
     ```bash
     pip install -r requirements.txt
     ```
-3.  **Run the Server**
+5.  **Run the Server**
     ```bash
     uvicorn app.main:app --reload
     ```
@@ -36,6 +53,16 @@ A real-time radar simulation and collision avoidance system built with **FastAPI
     ```bash
     ./setup.sh
     ```
+## Testing
+1.  **Install Dependencies**
+    ```bash
+    pip install -r requirements-dev.txt
+    ```
+2.  **Run tests**
+    ```bash
+    pytest -v
+    ```
+    
 ## Usage
 1.  Open your browser to **http://localhost:8000**
 2.  The "OWN" ship is the green marker in the center.
